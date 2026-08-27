@@ -1,0 +1,40 @@
+plugins {
+    id 'org.jetbrains.kotlin.jvm'
+    id 'maven-publish'
+}
+
+group = 'com.github.Dicecan'
+version = '1.0.0'
+
+kotlin {
+    jvmToolchain(17)
+}
+
+dependencies {
+    implementation 'com.hivemc.leveldb:leveldb-api:1.1.0'
+    implementation files('libs/leveldb-1.1.0.jar')
+    implementation 'com.google.guava:guava:33.3.1-jre'
+    implementation 'org.jetbrains.kotlin:kotlin-stdlib:1.9.22'
+    implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.7.3'
+    
+    // NBT parsing support
+    implementation 'br.com.gamemods:nbt-manipulator:3.0.0'
+
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.10.1'
+    testImplementation 'org.jetbrains.kotlin:kotlin-test:1.9.22'
+}
+
+test {
+    useJUnitPlatform()
+}
+
+publishing {
+    publications {
+        mavenJava(MavenPublication) {
+            from components.java
+            groupId = 'com.github.Dicecan'
+            artifactId = 'bedrock-leveldb'
+            version = '1.0.0'
+        }
+    }
+}
