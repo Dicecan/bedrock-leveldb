@@ -34,11 +34,12 @@ Existing Java LevelDB implementations for Bedrock Edition (such as `iq80/leveldb
 
 | Feature / Component | Upstream (`leveldb-mcpe-java`) | `bedrock-leveldb` |
 | :--- | :--- | :--- |
-| **I/O Subsystem** | `FileChannel.map` (`MappedByteBuffer`) | `SafeEnv` using chunked `RandomAccessFile` (avoids ART mmap crashes and virtual memory exhaustion) |
+| **I/O Subsystem** | `FileChannel.map` (`MappedByteBuffer`) | `SafeEnv` (`MmapLimiter(0)` + bounds-clamped `RandomAccessFile`, avoiding ART mmap crashes on both reads and writes) |
 | **ZLib Engine** | Allocates new `Inflater`/`Deflater` per block | `ThreadLocal` pooled `Inflater`/`Deflater` with auto-resizing buffer |
-| **Key Recognition** | Raw `ByteArray` only | `BedrockKeyParser` (decodes Chunk `[X, Z]`, SubChunk Y index, Dimension, Actors, Players, Portals, Ticking Areas) |
-| **NBT Codec** | External NBT parser required, no multi-compound handling | `BedrockNbtCodec` with automated fallback between single and concatenated multi-compound streams |
-| **Progress Reporting** | Basic `DBIterator` | `getAllRecords(onProgress)` with batched callback support for UI progress indicators |
+| **Key Recognition** | Raw `ByteArray` only | `BedrockKeyParser` (zero-allocation LE parser for Chunk `[X, Z]`, SubChunk Y, Dimensions, 1.18–1.21+ tags, Actors, Players, World systems) |
+| **NBT Codec** | External NBT parser required, no multi-compound handling | `BedrockNbtCodec` with trailing zero-padding handling, strict corrupt-tail detection, and multi-compound streams |
+| **Chunk Management** | Raw key iteration only | `getChunkCoordinateSummary`, `deleteChunk`/`deleteChunks`/`deleteChunksOutsideRange`, plus `SubChunkEncoder`, `BitArray`, `BedrockBlockState`, `BedrockChunkHelper` |
+| **Progress Reporting** | Basic `DBIterator` | Thread-safe `getAllRecords(onProgress)` with `cacheSize(0)` / `fillCache(false)` to prevent OOM during bulk scans |
 | **Native Binaries** | None (Pure Java) | None (Pure Java/Kotlin, compatible with all Android ABIs) |
 
 ---
@@ -58,7 +59,7 @@ dependencyResolutionManagement {
 
 // module build.gradle
 dependencies {
-    implementation 'com.github.Dicecan:bedrock-leveldb:v1.0.0'
+    implementation 'com.github.Dicecan:bedrock-leveldb:v1.1.0'
 }
 ```
 
@@ -151,11 +152,12 @@ Contains derivative works based on components originally licensed under the Apac
 
 | 模块 / 特性 | 原版 (`leveldb-mcpe-java`) | `bedrock-leveldb` (本项目) |
 | :--- | :--- | :--- |
-| **底层 I/O 引擎** | `FileChannel.map` (`MappedByteBuffer`) | `SafeEnv` + 分段流式 `RandomAccessFile`（避免 ART mmap 崩溃与虚拟内存耗尽） |
+| **底层 I/O 引擎** | `FileChannel.map` (`MappedByteBuffer`) | `SafeEnv`（`MmapLimiter(0)` + 越界保护分段 `RandomAccessFile`，读写全链路禁用 mmap，规避 ART 崩溃） |
 | **ZLib 压缩/解压** | 每个数据块独立创建 `Inflater`/`Deflater` | `ThreadLocal` 实例池 + 自适应扩容缓冲机制 |
-| **Key 格式识别** | 仅支持原始 `byte[]` | `BedrockKeyParser`（自动解析区块 `[X, Z]`、子区块 Y 层级、主世界/下界/末地维度、实体、玩家、传送门、常加载区域） |
-| **NBT 编解码** | 需自行引入外部 NBT 库，不支持多 Compound 流 | 内置 `BedrockNbtCodec`，自动处理单 Compound 与连续多 Compound 复合数据流，支持容错回退 |
-| **遍历与进度** | 仅提供标准 `DBIterator` | 提供 `getAllRecords(onProgress)`，支持批量进度回调以适配 UI 进度条 |
+| **Key 格式识别** | 仅支持原始 `byte[]` | `BedrockKeyParser`（零分配小端解析，支持 1.18–1.21+ 现代区块标签、子区块 Y、多维度、实体、玩家、世界系统） |
+| **NBT 编解码** | 需自行引入外部 NBT 库，不支持多 Compound 流 | 内置 `BedrockNbtCodec`，支持单/多 Compound 复合流、尾部零填充兼容与损坏尾部严格校验 |
+| **区块管理与编码** | 仅支持底层键值遍历 | 提供 `getChunkCoordinateSummary`、批量/范围区块清理，以及 `SubChunkEncoder`/`BitArray`/`BedrockBlockState`/`BedrockChunkHelper` |
+| **遍历与进度** | 仅提供标准 `DBIterator` | 线程安全 `getAllRecords(onProgress)`，默认禁用块缓存（`cacheSize(0)` + `fillCache(false)`）防止大存档扫描 OOM |
 | **原生动态库依赖** | 无（纯 Java） | 无（纯 Java/Kotlin，全架构 ABI 兼容） |
 
 ---
@@ -175,7 +177,7 @@ dependencyResolutionManagement {
 
 // 模块 build.gradle
 dependencies {
-    implementation 'com.github.Dicecan:bedrock-leveldb:v1.0.0'
+    implementation 'com.github.Dicecan:bedrock-leveldb:v1.1.0'
 }
 ```
 
