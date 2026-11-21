@@ -1,8 +1,10 @@
+/*
+ * Copyright (C) 2026 Dicecan
+ * SPDX-License-Identifier: GPL-3.0-or-later
+ */
+
 package com.encore.bedrock.leveldb.model
 
-/**
- * Bedrock Chunk Tag Byte Identifiers according to Bedrock World Specification.
- */
 enum class BedrockTagType(val tagByte: Int, val description: String) {
     DATA_3D(0x2B, "3D 高度图与生物群系 (1.18+)"),
     VERSION(0x2C, "区块数据版本号"),

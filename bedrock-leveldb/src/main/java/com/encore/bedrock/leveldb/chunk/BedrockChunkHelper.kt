@@ -1,3 +1,8 @@
+/*
+ * Copyright (C) 2026 Dicecan
+ * SPDX-License-Identifier: GPL-3.0-or-later
+ */
+
 package com.encore.bedrock.leveldb.chunk
 
 import br.com.gamemods.nbtmanipulator.NbtCompound
@@ -6,9 +11,6 @@ import br.com.gamemods.nbtmanipulator.NbtIO
 import java.io.ByteArrayOutputStream
 import java.io.DataOutputStream
 
-/**
- * Helpers for constructing Bedrock Edition LevelDB chunk keys and payloads.
- */
 object BedrockChunkHelper {
 
     const val TAG_SUBCHUNK_PREFIX: Byte = 0x2F

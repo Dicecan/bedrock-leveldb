@@ -1,3 +1,8 @@
+/*
+ * Copyright (C) 2026 Dicecan
+ * SPDX-License-Identifier: GPL-3.0-or-later
+ */
+
 package com.encore.bedrock.leveldb.model
 
 enum class LevelDbCategory(val title: String, val description: String) {

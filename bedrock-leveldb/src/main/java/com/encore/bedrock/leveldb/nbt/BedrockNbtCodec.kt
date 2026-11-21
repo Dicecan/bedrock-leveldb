@@ -1,3 +1,8 @@
+/*
+ * Copyright (C) 2026 Dicecan
+ * SPDX-License-Identifier: GPL-3.0-or-later
+ */
+
 package com.encore.bedrock.leveldb.nbt
 
 import br.com.gamemods.nbtmanipulator.NbtCompound

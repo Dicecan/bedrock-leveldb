@@ -1,3 +1,8 @@
+/*
+ * Copyright (C) 2026 Dicecan
+ * SPDX-License-Identifier: GPL-3.0-or-later
+ */
+
 package com.encore.bedrock.leveldb.chunk
 
 import br.com.gamemods.nbtmanipulator.NbtFile
@@ -5,9 +10,6 @@ import br.com.gamemods.nbtmanipulator.NbtIO
 import java.io.ByteArrayOutputStream
 import java.io.DataOutputStream
 
-/**
- * Encodes 16x16x16 Bedrock Edition sub-chunks into palette-packed binary storage format.
- */
 object SubChunkEncoder {
 
     const val SUBCHUNK_SIZE = 4096

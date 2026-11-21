@@ -1,3 +1,8 @@
+/*
+ * Copyright (C) 2026 Dicecan
+ * SPDX-License-Identifier: GPL-3.0-or-later
+ */
+
 package com.encore.bedrock.leveldb
 
 import br.com.gamemods.nbtmanipulator.NbtCompound
@@ -85,7 +90,6 @@ class BedrockLevelDbTest {
         assertEquals("Encore", (root["Author"] as? NbtString)?.value)
         assertEquals("Minecraft Bedrock", (root["Game"] as? NbtString)?.value)
 
-        // Multiple roots with trailing zero padding
         val multiOut = ByteArrayOutputStream()
         val multiDos = java.io.DataOutputStream(multiOut)
         NbtIO.writeNbtFile(multiDos, NbtFile("first", NbtInt(1)), compressed = false, littleEndian = true)
@@ -174,7 +178,6 @@ class BedrockLevelDbTest {
             assertEquals(200, summary.populated.size)
             assertEquals(200, summary.blockEntities.size)
 
-            // Keep only chunks in [0..4, 0..4] (25 chunks), delete the other 175
             val deleted = db.deleteChunksOutsideRange(0, 4, 0, 4, dimensionId = 0)
             assertEquals(175, deleted)
             assertEquals(25, db.getPopulatedChunkCoordinates(0).size)
@@ -194,7 +197,7 @@ class BedrockLevelDbTest {
         try {
             assertFalse(writable::class.java.simpleName.startsWith("MM"))
             assertFalse(randomInput::class.java.simpleName.startsWith("MM"))
-            // Reading past EOF clamps cleanly instead of over-allocating
+
             val slice = randomInput.read(6, 100)
             assertEquals(7, slice.remaining())
         } finally {
@@ -253,7 +256,7 @@ class BedrockLevelDbTest {
         assertTrue(encoded.size > 10)
         assertEquals(SubChunkEncoder.DEFAULT_STORAGE_VERSION, encoded[0])
         assertEquals(1.toByte(), encoded[1])
-        // 3 palette entries -> optimal bitsPerBlock = 2 -> layerHeader = (2 << 1) = 4
+
         assertEquals(4.toByte(), encoded[2])
     }
 }

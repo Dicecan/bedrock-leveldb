@@ -1,3 +1,8 @@
+/*
+ * Copyright (C) 2026 Dicecan
+ * SPDX-License-Identifier: GPL-3.0-or-later
+ */
+
 package com.encore.bedrock.leveldb.chunk
 
 import br.com.gamemods.nbtmanipulator.NbtByte
@@ -5,9 +10,6 @@ import br.com.gamemods.nbtmanipulator.NbtCompound
 import br.com.gamemods.nbtmanipulator.NbtInt
 import br.com.gamemods.nbtmanipulator.NbtString
 
-/**
- * Represents a Minecraft Bedrock Edition block state palette entry.
- */
 data class BedrockBlockState(
     val name: String,
     val states: Map<String, Any> = emptyMap(),

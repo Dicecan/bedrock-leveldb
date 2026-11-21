@@ -1,3 +1,8 @@
+/*
+ * Copyright (C) 2026 Dicecan
+ * SPDX-License-Identifier: GPL-3.0-or-later
+ */
+
 package com.encore.bedrock.leveldb
 
 import com.encore.bedrock.leveldb.model.BedrockDimension
@@ -5,9 +10,6 @@ import com.encore.bedrock.leveldb.model.BedrockTagType
 import com.encore.bedrock.leveldb.model.LevelDbCategory
 import com.encore.bedrock.leveldb.model.LevelDbRecord
 
-/**
- * Parsed coordinates and tag metadata for a Bedrock LevelDB chunk key.
- */
 data class ChunkKeyInfo(
     val chunkX: Int,
     val chunkZ: Int,
@@ -16,19 +18,12 @@ data class ChunkKeyInfo(
     val subChunkIndex: Int? = null
 )
 
-/**
- * Parser and categorizer for raw Minecraft Bedrock LevelDB Keys.
- */
 object BedrockKeyParser {
 
     fun isKnownChunkTag(tagByte: Int): Boolean {
         return BedrockTagType.fromByte(tagByte) != BedrockTagType.UNKNOWN
     }
 
-    /**
-     * Parses a binary Bedrock chunk key (9/10 bytes for Overworld, 13/14 bytes for Nether/End).
-     * Returns null if the key length or structure does not match a valid chunk key.
-     */
     fun parseChunkKey(key: ByteArray): ChunkKeyInfo? {
         return when (key.size) {
             9 -> {
@@ -76,7 +71,6 @@ object BedrockKeyParser {
             valueSample[0] == 0x08.toByte()
         )
 
-        // 1. Player Profiles
         if (keyStr == "~local_player") {
             return LevelDbRecord(key, keyStr, "本地房主玩家 (~local_player)", LevelDbCategory.PLAYER, valueSize = valueSize, isNbt = true)
         }
@@ -89,7 +83,6 @@ object BedrockKeyParser {
             return LevelDbRecord(key, keyStr, "玩家数据 ($uuid)", LevelDbCategory.PLAYER, valueSize = valueSize, isNbt = true)
         }
 
-        // 2. Entity & Actor Keys
         if (key.size >= 11 && keyStr.startsWith("actorprefix")) {
             val actorId = if (key.size >= 19) readLittleEndianLong(key, 11) else null
             val title = if (actorId != null) "实体生物 (ID: $actorId)" else "实体生物 ($keyStr)"
@@ -99,7 +92,6 @@ object BedrockKeyParser {
             return LevelDbRecord(key, keyStr, "Digp 实体索引 ($keyStr)", LevelDbCategory.ENTITY, valueSize = valueSize, isNbt = isNbt)
         }
 
-        // 3. World Systems & Portals
         if (keyStr == "portals") {
             return LevelDbRecord(key, keyStr, "下界传送门索引 (portals)", LevelDbCategory.WORLD, valueSize = valueSize, isNbt = true)
         }
@@ -125,7 +117,6 @@ object BedrockKeyParser {
             return LevelDbRecord(key, keyStr, "世界任务调度器 (schedulerWT)", LevelDbCategory.WORLD, valueSize = valueSize, isNbt = isNbt)
         }
 
-        // 4. 2D / 3D Chunk Keys (8 or 12 byte coordinate prefix + tag byte [+ subChunk Y])
         parseChunkKey(key)?.let { info ->
             val chunkX = info.chunkX
             val chunkZ = info.chunkZ

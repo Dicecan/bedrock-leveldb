@@ -1,8 +1,10 @@
+/*
+ * Copyright (C) 2026 Dicecan
+ * SPDX-License-Identifier: GPL-3.0-or-later
+ */
+
 package com.encore.bedrock.leveldb.chunk
 
-/**
- * Packed integer array for Bedrock Edition sub-chunk block palette indices.
- */
 class BitArray(
     val bitsPerBlock: Int,
     val size: Int = 4096,

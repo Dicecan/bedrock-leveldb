@@ -1,3 +1,8 @@
+/*
+ * Copyright (C) 2026 Dicecan
+ * SPDX-License-Identifier: GPL-3.0-or-later
+ */
+
 package com.encore.bedrock.leveldb
 
 import br.com.gamemods.nbtmanipulator.NbtFile
@@ -72,7 +77,7 @@ class BedrockLevelDb(val dbFolder: File) : Closeable, AutoCloseable {
                 iterator.seekToFirst()
                 while (iterator.hasNext()) {
                     val entry = iterator.next()
-                    // LevelDB iterators may reuse backing buffers; retain an owned key copy.
+
                     val key = entry.key.copyOf()
                     val value = entry.value
                     list.add(BedrockKeyParser.parse(key, value.size, value))
